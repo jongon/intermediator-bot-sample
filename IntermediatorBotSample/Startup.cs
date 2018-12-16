@@ -2,10 +2,9 @@
 using IntermediatorBotSample.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.BotFramework;
-using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -48,11 +47,11 @@ namespace IntermediatorBotSample
                 // caught here. To facillitate debugging, the exception is sent out, via Trace, 
                 // to the emulator. Trace activities are NOT displayed to users, so in addition
                 // an "Ooops" message is sent. 
-                options.Middleware.Add(new CatchExceptionMiddleware<Exception>(async (context, exception) =>
-                {
-                    await context.TraceActivity("Bot Exception", exception);
-                    await context.SendActivity($"Sorry, it looks like something went wrong: {exception.Message}");
-                }));
+                //options.Middleware.Add(new CatchExceptionMiddleware<Exception>(async (context, exception) =>
+                //{
+                //    await context.TraceActivity("Bot Exception", exception);
+                //    await context.SendActivity($"Sorry, it looks like something went wrong: {exception.Message}");
+                //}));
 
                 // The Memory Storage used here is for local bot debugging only. When the bot
                 // is restarted, anything stored in memory will be gone. 
@@ -94,13 +93,7 @@ namespace IntermediatorBotSample
             app.UseDefaultFiles()
                 .UseStaticFiles()
                 .UseMvc() // Required Razor pages
-                .UseBotFramework(bot =>
-                {
-                    // This is how you can define a custom endpoint in case you're unhappy with
-                    // the default "/api/messages":
-                    bot.BasePath = Configuration["BotBasePath"];
-                    bot.MessagesPath = Configuration["BotMessagesPath"];
-                });
+                .UseBotFramework();
         }
     }
 }

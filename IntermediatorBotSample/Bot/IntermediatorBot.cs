@@ -3,6 +3,7 @@ using Microsoft.Bot;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IntermediatorBotSample.Bot
@@ -11,7 +12,7 @@ namespace IntermediatorBotSample.Bot
     {
         private const string SampleUrl = "https://github.com/tompaana/intermediator-bot-sample";
 
-        public async Task OnTurn(ITurnContext context)
+        public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             Command showOptionsCommand = new Command(Commands.ShowOptions);
 
@@ -31,9 +32,9 @@ namespace IntermediatorBotSample.Bot
                 }
             };
 
-            Activity replyActivity = context.Activity.CreateReply();
+            Activity replyActivity = turnContext.Activity.CreateReply();
             replyActivity.Attachments = new List<Attachment>() { heroCard.ToAttachment() };
-            await context.SendActivity(replyActivity);
+            await turnContext.SendActivityAsync(replyActivity);
         }
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Underscore.Bot.MessageRouting;
 using Underscore.Bot.MessageRouting.DataStore;
@@ -89,9 +90,9 @@ namespace IntermediatorBotSample.Middleware
             MessageLogs = new MessageLogs(connectionString);
         }
 
-        public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
-            Activity activity = context.Activity;
+            Activity activity = turnContext.Activity;
 
             if (activity.Type is ActivityTypes.Message)
             {
@@ -106,7 +107,7 @@ namespace IntermediatorBotSample.Middleware
                 AbstractMessageRouterResult messageRouterResult = null;
 
                 // Check the activity for commands
-                if (await CommandHandler.HandleCommandAsync(context) == false)
+                if (await CommandHandler.HandleCommandAsync(turnContext) == false)
                 {
                     // No command detected/handled
 
@@ -134,7 +135,7 @@ namespace IntermediatorBotSample.Middleware
                         else
                         {
                             // No action taken - this middleware did not consume the activity so let it propagate
-                            await next().ConfigureAwait(false);
+                            await next(cancellationToken);
                         }
                     }
                 }
